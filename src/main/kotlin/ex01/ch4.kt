@@ -86,6 +86,73 @@ CharProgression
 // 1..12 step 3 //1,4,7,10
 // 끝 값이 진행에 속한 원소가 아닐 경우, 자동으로 끝 값에 가까운 값까지만 진행에 속하게 된다.
 
+//"Hello, World".subString(1..4) // ello
+//IntArray(10) {it*it}.sliceArray(2..5) // 4,9,16,25
+// 인덱스 * 인덱스 값을 10 배열크기로 만들어서, 인덱스 2부터 5까지 포함하는 범위를 잘라서 새 배열로 반환.
+// 범위를 사용해서 문자열, 배열의 일부를 뽑아낼 수 있음
+
+// 범위는 동적으로 할당되는 "객체" 이기 떄문에, 비교 대신 범위를 쓰면 부가 비용이 든다.
+
+// 코틀린 코드가 실제로 JVM에서 어떻게 돌아가는지 확인하고 싶을 때 사용하는 기능
+// 코틀린 코드의 저수준 의미를 알아보고 싶을 때 - >
+// JVM 바이트 코드 뷰어 -> Tools > Kotlin > Show Kotlin ByteCode 를 선택
+
+// in / !in 연산은 범위뿐 아니라 “포함 관계를 표현하는 타입”이면 다 사용 가능하다
+// 범위(..)는 반드시 객체를 생성하는가? -> 컴파일러는 필요 없으면 범위 객체를 만들지 않는다.
+
+//println(5 in a..b)
+// a <= 5 && 5 <= b 로 최적화 됨
+
+// 연산자 우선순위 ".." 범위 연산자는 "+" 보다 낮고, "비교" 보다는 높다.
+// "in / !in" 은 "논리연산자" 사이에 위치
 
 
+// when 문과 여럿 중에 하나 선택하기
+// !! 코틀린은 if 로 조건을 순차적 검사하는 것을 -> when 문으로 쉽게 가능
 
+fun hexDigit(n: Int): Char {
+    when{
+        n in 0..9 -> return '0' + n
+        n in 10..15 -> return 'A' + n - 10
+        else -> return '?'
+    }
+}
+
+// 조건 → 문(branch) 형태가 여러 개 나올 수 있음.
+// else는 선택 사항 (디폴트 가지(default branch)) -> 없어도 됨. 대신 그 경우, 조건을 만족하는 게 하나도 없으면 아무 일도 안 하고 when 블록이 끝남
+// 위에서 아래로 첫 번째로 일치하는 가지만 실행됨. -> 나머지는 무시함
+//
+
+// when 문도 if 처럼 사용 가능, 모든 가능한 경우에 대한 값을 만들기 위해 else 를 꼭 포함
+// when을 식(expression)으로 사용할 때는 else 필수
+
+// when 은 자바 switch 문과 비슷하지만, when은 switch보다 훨씬 범용적
+//switch는 "값이 일치하는지"만 비교 가능.
+//when은 조건식이 자유로움: 범위, 타입 체크, Boolean 식 등 뭐든 가능.
+
+// switch의 fall-through(풀 스루) :
+// 어떤 조건을 만족할 때 까지 프로그램이 해당 조건에 대응하는 문을 실행하고 break 를 만날때까지 모든 가지를 실행
+// when 은 조건을 만족하는 가지만 실행하고 절대 플스루 하지 않음 -> break 필요 없음.
+
+
+// 대상이 있는 when
+
+fun numberDescription(n: Int): String = when {
+    n == 0 -> "Zero"
+    n == 1 || n == 2 || n == 3 -> "Small"
+    n in 4..9 -> "Medium"
+    n in 10..100 -> "Large"
+    n !in Int.MIN_VALUE until 0 -> "Negative"
+    else -> "Huge"
+}
+
+// “n 값을 기준으로 분기하겠다”
+// 각 가지(condition)는 n과 비교되는 값이어야 함
+fun numberDescription(n: Int, max: Int = 100): String = when (n) {
+    0 -> "Zero"
+    1, 2, 3 -> "Small"
+    in 4..9 -> "Medium"
+    in 10..max -> "Large"
+    !in Int.MIN_VALUE until 0 -> "Negative"
+    else -> "Huge"
+}
